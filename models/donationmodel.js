@@ -9,8 +9,9 @@ const donationSchema = new Schema({
     default: uuidv4,
   },
   campaign_id: {
-    type: String,
-    ref: "Campaign"
+    type: Schema.Types.ObjectId,
+    ref: "Campaign", // Reference to Campaign model
+    required: true,
   },
   donor_name: {
     type: String,
@@ -18,7 +19,6 @@ const donationSchema = new Schema({
   },
   amount: {
     type: Number,
-    // no longer required
   },
   description: {
     type: String,

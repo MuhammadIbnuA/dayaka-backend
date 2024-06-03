@@ -71,7 +71,7 @@ const getAllVerificationRequests = async (req, res) => {
       res.json(requests);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ error: 'Server error or access denied cause youre not admin wlee :p' });
     }
   };
 

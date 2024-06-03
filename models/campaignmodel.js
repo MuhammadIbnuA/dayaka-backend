@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid"); // Import the uuid function
+const { v4: uuidv4 } = require("uuid");
 const Schema = mongoose.Schema;
 
 const campaignSchema = new Schema({
   campaign_id: {
     type: String,
-    default: uuidv4, // Generate a UUID by default
-    unique: true, // Ensure the UUID is unique
+    default: uuidv4,
+    unique: true,
   },
   title: {
     type: String,
@@ -51,9 +51,10 @@ const campaignSchema = new Schema({
     default: "aktif",
   },
   initiator_username: {
-    type: String, // Change to string type
+    type: String,
     required: true,
   },
+  donations: [{ type: Schema.Types.ObjectId, ref: 'Donation' }], // Added donations field
   created_at: {
     type: Date,
     default: Date.now,

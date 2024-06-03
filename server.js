@@ -30,6 +30,7 @@ const newsController = require ('./controller/newscontroller.js');
 const specialcontroller = require ('./controller/getallnewspendingapprove.js');
 const veryspecialcontroller = require('./controller/getnewsbyid.js');
 const donationController = require('./controller/donationcontroller.js')
+const donationnewest = require('./controller/getnewstdonation.js')
 const {isVerified, isAdmin, isAuthenticated} = require('./middleware/authmiddleware');
 
 // Define routes
@@ -50,7 +51,7 @@ router.post("/verification-request", upload.single('idPhoto'), verificationContr
 // Admin routes
 router.get("/verification-requests",isAdmin, verificationController.getAllVerificationRequests); // admin see verification requested 
 router.put("/verification-requests/approve/:id",isAdmin, verificationController.approveVerificationRequest); // admin approve request // tested
-router.put("/verification-requests/reject/:id",isAdmin, verificationController.rejectVerificationRequest); // admin reject request
+router.put("/verification-requests/reject/:id",isAdmin, verificationController.rejectVerificationRequest); // admin reject request // tested
 // News
 router.post('/news',upload.single('file'), newsController.createNews); // post news // tested
 router.put('/news/:id', newsController.updateNews); // edit news // tested
@@ -62,14 +63,14 @@ router.get('/news/all/:id',isAdmin, veryspecialcontroller.getNewsById ); // Get 
 router.get('/news/approved/:id', newsController.getNewsByIdWithApproved); // Get news by news ID with approved status // tested
 router.get('/news/pending-approve',isAdmin,specialcontroller.getAllNewsNotYetApproved); // Get all news not yet approved (admin) // tested
 router.get('/news/notapproved/:id',isAdmin,newsController.getNewsByIdNotYetApproved); // Get news by news ID not yet approved (admin) // tested
-// Donation Controller
-router.post("/donations", upload.single('donationPhoto'), donationController.createDonation); // Route to create a new donation with photo upload and optional news association
-router.delete("/donations/:id", donationController.deleteDonation); // Route to delete a donation by ID
-router.get("/donations", donationController.getAllDonations); // Route to get all donations
-router.get("/donations/campaign/:campaign_id", donationController.getAllDonationsByCampaignId); // Route to get all donations by campaign ID
-router.get("/donations/:id", donationController.getDonationByDonationId); // Route to get a donation by donation ID
-router.patch("/donations/:id/verify", donationController.verifyDonation); // Route to verify a donation
-router.get("/donations/newest", donationController.getNewestDonations); // Route to get the newest donations
+// Donation
+router.post("/donations", upload.single('donationPhoto'), donationController.createDonation); // Route to create a new donation with photo upload and optional news association // tested
+router.delete("/donations/:id", donationController.deleteDonation); // Route to delete a donation by ID // tested
+router.get("/donations", donationController.getAllDonations); // Route to get all donations // tested
+router.get("/donations/campaign/:campaign_id", donationController.getAllDonationsByCampaignId); // Route to get all donations by campaign ID // tested
+router.get("/donations/:id", donationController.getDonationByDonationId); // Route to get a donation by donation ID // tested
+router.patch("/donations/:id/verify", donationController.verifyDonation); // Route to verify a donation // tested
+router.get("/latest", donationnewest.getNewestDonations); // Route to get the newest donation // tested solved
 
 
 // Use the router

@@ -1,5 +1,6 @@
 const Campaign = require("../models/campaignmodel");
 const User = require("../models/usermodel");
+const Donation = require("../models/donationmodel");
 
 // Create a new campaign
 const createCampaign = async (req, res) => {
@@ -38,8 +39,8 @@ const closeCampaign = async (req, res) => {
   try {
     const campaignId = req.params.id;
 
-    const closedCampaign = await Campaign.findByIdAndUpdate(
-      campaignId,
+    const closedCampaign = await Campaign.findOneAndUpdate(
+      { campaign_id: campaignId },
       { status: "berakhir" },
       { new: true }
     );
@@ -61,8 +62,8 @@ const extendCampaign = async (req, res) => {
     const campaignId = req.params.id;
     const { end_date } = req.body;
 
-    const extendedCampaign = await Campaign.findByIdAndUpdate(
-      campaignId,
+    const extendedCampaign = await Campaign.findOneAndUpdate(
+      { campaign_id: campaignId },
       { end_date },
       { new: true }
     );
@@ -83,7 +84,7 @@ const getCampaignsByUser = async (req, res) => {
   try {
     const { username } = req.params;
 
-    const campaigns = await Campaign.find({ initiator_username: username });
+    const campaigns = await Campaign.find({ initiator_username: username }).populate('donations');
 
     res.json({ campaigns });
   } catch (error) {
@@ -97,7 +98,7 @@ const getCampaignsByTarget = async (req, res) => {
   try {
     const { target } = req.params;
 
-    const campaigns = await Campaign.find({ target });
+    const campaigns = await Campaign.find({ target }).populate('donations');
 
     res.json({ campaigns });
   } catch (error) {
@@ -111,7 +112,7 @@ const getCampaignsByLocation = async (req, res) => {
   try {
     const { location } = req.params;
 
-    const campaigns = await Campaign.find({ location });
+    const campaigns = await Campaign.find({ location }).populate('donations');
 
     res.json({ campaigns });
   } catch (error) {
@@ -128,7 +129,7 @@ const getActiveCampaigns = async (req, res) => {
     const activeCampaigns = await Campaign.find({
       start_date: { $lte: currentDate },
       end_date: { $gte: currentDate },
-    });
+    }).populate('donations');
 
     res.json({ campaigns: activeCampaigns });
   } catch (error) {
@@ -137,6 +138,7 @@ const getActiveCampaigns = async (req, res) => {
   }
 };
 
+// Get campaigns with optional filters
 const getCampaignsFilter = async (req, res) => {
   try {
     const { target, location, active } = req.query;
@@ -163,7 +165,7 @@ const getCampaignsFilter = async (req, res) => {
       }
     }
 
-    const campaigns = await Campaign.find(query);
+    const campaigns = await Campaign.find(query).populate('donations');
     res.json({ campaigns });
   } catch (error) {
     console.error(error);
