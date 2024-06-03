@@ -3,11 +3,12 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const User = require("../models/usermodel");
+const { admin } = require("../firebase");
 
 // Register a new user
 const registerUser = async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, provider, providerId } = req.body;
 
     // Check if username or email already exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -15,14 +16,19 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ error: 'Username or email already exists' });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password if registering conventionally
+    let hashedPassword = '';
+    if (provider !== 'google') {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
 
     // Create a new user
     const newUser = new User({
       username,
-      password: hashedPassword, // Store the hashed password
+      password: hashedPassword, // Store the hashed password if registering conventionally
       email,
+      provider,
+      providerId,
     });
 
     // Save the user to the database
@@ -139,9 +145,43 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Google OAuth logic
+const googleOAuth = async (req, res) => {
+  const { idToken } = req.body;
+
+  try {
+    // Verify the ID token using Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, email, name } = decodedToken;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      // Create a new user if not exists
+      user = new User({
+        username: name,
+        email: email,
+        isVerified: true,
+        provider: 'google',
+        providerId: uid,
+      });
+      await user.save();
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ user: user.username }, 'iwishiwasyourjoke', { expiresIn: '1h' });
+
+    // Return the token and user as a response
+    res.json({ token, user });
+  } catch (error) {
+    console.error('Error verifying Firebase ID token:', error);
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
 module.exports = {
   registerUser,
   login,
   requestPasswordReset,
   resetPassword,
+  googleOAuth
 };

@@ -43,6 +43,7 @@ router.post("/campaign",campaignController.createCampaign); // Route to create a
 router.put("/campaign/close/:id", campaignController.closeCampaign); // Route to close a campaign by ID
 router.put("/campaign/extend/:id", campaignController.extendCampaign); // Route to extend a campaign by ID
 router.post("/register", userController.registerUser); // Register a new user
+router.post('/google-oauth',userController.googleOAuth);
 router.post("/login", userController.login); // Login
 router.post("/request-reset", userController.requestPasswordReset); // Request for reset password
 router.post('/reset-password', userController.resetPassword); // Resetting Password

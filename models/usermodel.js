@@ -9,7 +9,6 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   isVerified: {
     type: Boolean,
@@ -29,6 +28,15 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
     required: true,
+  },
+  provider: {
+    type: String,
+    required: true,
+  },
+  providerId: {
+    type: String,
+    required: true,
+    unique: true,
   }
 });
 

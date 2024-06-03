@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration</title>
+</head>
+<body>
+  <h1>User Registration</h1>
+
+  <!-- Conventional Registration Form -->
+  <h2>Conventional Registration</h2>
+  <form id="conventional-registration-form">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br><br>
+    
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <input type="hidden" id="provider" name="provider" value="conventional"> <!-- Set provider to 'conventional' -->
+    <input type="hidden" id="providerId" name="providerId" value="0"> <!-- Empty value for providerId -->
+
+    <button type="submit">Register</button>
+  </form>
+
+  <!-- Google OAuth Button -->
+  <h2>Google OAuth Registration</h2>
+  <button id="google-oauth-button">Register with Google</button>
+
+  <script>
+    // Event listener for conventional registration form submission
+    document.getElementById('conventional-registration-form').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      const formData = new FormData(this);
+      const formDataObject = {};
+      formData.forEach((value, key) => {
+        formDataObject[key] = value;
+      });
+
+      try {
+        const response = await fetch('http://localhost:3001/v1/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formDataObject)
+        });
+        const data = await response.json();
+        alert(data.message);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+
+    // Event listener for Google OAuth button
+    document.getElementById('google-oauth-button').addEventListener('click', async function() {
+      try {
+        const googleAuthUrl = 'http://localhost:3001/v1/google-oauth'; // Endpoint for Google OAuth
+        const response = await fetch(googleAuthUrl);
+        const data = await response.json();
+        // Redirect to Google OAuth URL
+        window.location.href = data.authUrl;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
