@@ -76,109 +76,108 @@ const extendCampaign = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
-
 };
 
 // Get campaigns by initiator's username
 const getCampaignsByUser = async (req, res) => {
-    try {
-      const { username } = req.params;
-  
-      const campaigns = await Campaign.find({ initiator_username: username });
-  
-      res.json({ campaigns });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
-    }
-  };
-  
-  // Get campaigns by target enum
-  const getCampaignsByTarget = async (req, res) => {
-    try {
-      const { target } = req.params;
-  
-      const campaigns = await Campaign.find({ target });
-  
-      res.json({ campaigns });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
-    }
-  };
-  
-  // Get campaigns by location enum
-  const getCampaignsByLocation = async (req, res) => {
-    try {
-      const { location } = req.params;
-  
-      const campaigns = await Campaign.find({ location });
-  
-      res.json({ campaigns });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
-    }
-  };
-  
-  // Get campaigns that are still active (current date is between start and end date)
-  const getActiveCampaigns = async (req, res) => {
-    try {
-      const currentDate = new Date();
-  
-      const activeCampaigns = await Campaign.find({
-        start_date: { $lte: currentDate },
-        end_date: { $gte: currentDate },
-      });
-  
-      res.json({ campaigns: activeCampaigns });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
-    }
-  };
+  try {
+    const { username } = req.params;
 
-  const getCampaignsFilter = async (req, res) => {
-    try {
-      const { target, location, active } = req.query;
-      const query = {};
-  
-      if (target) {
-        query.target = target;
-      }
-  
-      if (location) {
-        query.location = location;
-      }
-  
-      if (active !== undefined) {
-        const currentDate = new Date();
-        if (active === 'true') {
-          query.start_date = { $lte: currentDate };
-          query.end_date = { $gte: currentDate };
-        } else if (active === 'false') {
-          query.$or = [
-            { end_date: { $lt: currentDate } },
-            { start_date: { $gt: currentDate } }
-          ];
-        }
-      }
-  
-      const campaigns = await Campaign.find(query);
-      res.json({ campaigns });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
+    const campaigns = await Campaign.find({ initiator_username: username });
+
+    res.json({ campaigns });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get campaigns by target enum
+const getCampaignsByTarget = async (req, res) => {
+  try {
+    const { target } = req.params;
+
+    const campaigns = await Campaign.find({ target });
+
+    res.json({ campaigns });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get campaigns by location enum
+const getCampaignsByLocation = async (req, res) => {
+  try {
+    const { location } = req.params;
+
+    const campaigns = await Campaign.find({ location });
+
+    res.json({ campaigns });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get campaigns that are still active (current date is between start and end date)
+const getActiveCampaigns = async (req, res) => {
+  try {
+    const currentDate = new Date();
+
+    const activeCampaigns = await Campaign.find({
+      start_date: { $lte: currentDate },
+      end_date: { $gte: currentDate },
+    });
+
+    res.json({ campaigns: activeCampaigns });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const getCampaignsFilter = async (req, res) => {
+  try {
+    const { target, location, active } = req.query;
+    const query = {};
+
+    if (target) {
+      query.target = target;
     }
-  };
-  
-  module.exports = {
-    createCampaign,
-    closeCampaign,
-    extendCampaign,
-    getCampaignsByUser,
-    getCampaignsByTarget,
-    getCampaignsByLocation,
-    getActiveCampaigns,
-    getCampaignsFilter
-  };
+
+    if (location) {
+      query.location = location;
+    }
+
+    if (active !== undefined) {
+      const currentDate = new Date();
+      if (active === 'true') {
+        query.start_date = { $lte: currentDate };
+        query.end_date = { $gte: currentDate };
+      } else if (active === 'false') {
+        query.$or = [
+          { end_date: { $lt: currentDate } },
+          { start_date: { $gt: currentDate } }
+        ];
+      }
+    }
+
+    const campaigns = await Campaign.find(query);
+    res.json({ campaigns });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = {
+  createCampaign,
+  closeCampaign,
+  extendCampaign,
+  getCampaignsByUser,
+  getCampaignsByTarget,
+  getCampaignsByLocation,
+  getActiveCampaigns,
+  getCampaignsFilter
+};

@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid"); // Import the uuid function
 const Schema = mongoose.Schema;
 
 const campaignSchema = new Schema({
+  campaign_id: {
+    type: String,
+    default: uuidv4, // Generate a UUID by default
+    unique: true, // Ensure the UUID is unique
+  },
   title: {
     type: String,
     required: true,
